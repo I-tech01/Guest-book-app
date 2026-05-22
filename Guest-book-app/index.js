@@ -1,41 +1,45 @@
-// fetch and display entries when page loads
+// 
+const form = document.getElementById('guestForm');
+const entriesList = document.getElementById('entries');
+
+// Load existing entries from backend
 async function loadEntries() {
-  const response = await fetch("http://127.0.0.1:3000/entries")
+  try {
+    const response = await fetch('http://localhost:3000/entries');
+    const entries = await response.json();
 
-
-;
-  const entries = await response.json();
-
-  const list = document.getElementById("entries");
-  list.innerHTML = ""; // clear old entries
-
-  entries.forEach((entry) => {
-    const li = document.createElement("li");
-    li.textContent = `${entry.name}: ${entry.message}`;
-    list.appendChild(li);
-  });
+    entriesList.innerHTML = ''; // clear old list
+    entries.forEach(entry => {
+      const li = document.createElement('li');
+      li.textContent = `${entry.name}: ${entry.message}`;
+      entriesList.appendChild(li);
+    });
+  } catch (error) {
+    console.error('Error loading entries:', error);
+  }
 }
 
-// handle form submission
-document.getElementById("guestForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+// Handle form submission
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-  const name = document.getElementById("name").value;
-  const message = document.getElementById("message").value;
+  const name = document.getElementById('name').value;
+  const message = document.getElementById('message').value;
 
-  await fetch("http://127.0.0.1:3000/entries"
-, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, message }),
-  });
+  try {
+    await fetch('http://localhost:3000/entries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message })
+    });
 
-  await loadEntries(); // refresh list
-
-  document.getElementById("guestForm").reset();
-
-  console.log({ name, message });
+    // Reload entries after adding new one
+    loadEntries();
+    form.reset();
+  } catch (error) {
+    console.error('Error submitting entry:', error);
+  }
 });
 
-// initial load
+// Load entries when page first opens
 loadEntries();
