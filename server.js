@@ -5,7 +5,9 @@ const app = express();
 const PORT = 3000;
 
 // middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://127.0.0.1', 'http://localhost']
+}));
 app.use(express.json());
 
 // in-memory storage
